@@ -13,4 +13,4 @@ RUN sudo apt install -y libreadline-dev
 COPY ./setup.sh /setup.sh
 RUN chmod +x /setup.sh
 
-CMD [ "/setup.sh", "${FOLDER}" ]
+CMD /setup.sh $FOLDER
