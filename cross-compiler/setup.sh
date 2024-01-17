@@ -1,19 +1,17 @@
 #!/bin/bash
 
-FOLDER=${1}
+cd /${1}
 
-cd /$FOLDER
+rm -rf /${1}/build
 
-rm -rf /$FOLDER/build
-
-if [ -f /$FOLDER/setup.sh ]; then
-    bash /$FOLDER/setup.sh
+if [ -f /${1}/setup.sh ]; then
+    bash /${1}/setup.sh
 else
-    mkdir /$FOLDER/build
-    cd /$FOLDER/build
-    CC=gcc CXX=g++ python3 ../configure.py --plugin-name=$FOLDER -s cs2
-    cd /$FOLDER
+    mkdir /${1}/build
+    cd /${1}/build
+    CC=gcc CXX=g++ python3 ../configure.py --plugin-name=${1} -s cs2
+    cd /${1}
 fi
 
-cd /$FOLDER/build
+cd /${1}/build
 ambuild
