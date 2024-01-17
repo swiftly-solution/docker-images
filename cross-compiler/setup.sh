@@ -2,7 +2,7 @@
 
 cd /swiftly
 
-rm -rf build
-bash ./setup.sh
-cd build
+rm -rf /swiftly/build
+bash /swiftly/setup.sh
+cd /swiftly/build
 ambuild
