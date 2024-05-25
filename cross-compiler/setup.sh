@@ -2,7 +2,7 @@
 
 cd /${1}
 
-if [ ! -f /${1}/.xmake ]; then
+if [ ! -d /${1}/.xmake ]; then
     rm -rf /${1}/build
 fi
 
