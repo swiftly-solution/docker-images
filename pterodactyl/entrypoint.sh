@@ -1,0 +1,92 @@
+#!/bin/bash
+cd /home/container
+sleep 1
+
+export INTERNAL_IP=`ip route get 1 | awk '{print $NF;exit}'`
+
+if [ ! -z ${SRCDS_APPID} ]; then
+    if [ ${SRCDS_STOP_UPDATE} -eq 0 ]; then
+        STEAMCMD=""
+        echo "Starting SteamCMD for AppID: ${SRCDS_APPID}"
+        if [ ! -z ${SRCDS_BETAID} ]; then
+            if [ ! -z ${SRCDS_BETAPASS} ]; then
+                if [ ${SRCDS_VALIDATE} -eq 1 ]; then
+                    echo "SteamCMD Validate Flag Enabled! Triggered install validation for AppID: ${SRCDS_APPID}"
+                    echo "THIS MAY WIPE CUSTOM CONFIGURATIONS! Please stop the server if this was not intended."
+                    if [ ! -z ${SRCDS_LOGIN} ]; then
+                        STEAMCMD="./steamcmd/steamcmd.sh +login ${SRCDS_LOGIN} ${SRCDS_LOGIN_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} -betapassword ${SRCDS_BETAPASS} validate +quit"
+                    else
+                        STEAMCMD="./steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} -betapassword ${SRCDS_BETAPASS} validate +quit"
+                    fi
+                else
+                    if [ ! -z ${SRCDS_LOGIN} ]; then
+                        STEAMCMD="./steamcmd/steamcmd.sh +login ${SRCDS_LOGIN} ${SRCDS_LOGIN_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} -betapassword ${SRCDS_BETAPASS} +quit"
+                    else
+                        STEAMCMD="./steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} -betapassword ${SRCDS_BETAPASS} +quit"
+                    fi
+                fi
+            else
+                if [ ${SRCDS_VALIDATE} -eq 1 ]; then
+                    if [ ! -z ${SRCDS_LOGIN} ]; then
+                        STEAMCMD="./steamcmd/steamcmd.sh +login ${SRCDS_LOGIN} ${SRCDS_LOGIN_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} validate +quit"
+                    else             
+                        STEAMCMD="./steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} validate +quit"
+                    fi
+                else
+                    if [ ! -z ${SRCDS_LOGIN} ]; then
+                        STEAMCMD="./steamcmd/steamcmd.sh +login ${SRCDS_LOGIN} ${SRCDS_LOGIN_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} +quit"
+                    else 
+                        STEAMCMD="./steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} +quit"
+                    fi
+                fi
+            fi
+        else
+            if [ ${SRCDS_VALIDATE} -eq 1 ]; then
+            echo "SteamCMD Validate Flag Enabled! Triggered install validation for AppID: ${SRCDS_APPID}"
+            echo "THIS MAY WIPE CUSTOM CONFIGURATIONS! Please stop the server if this was not intended."
+                if [ ! -z ${SRCDS_LOGIN} ]; then
+                    STEAMCMD="./steamcmd/steamcmd.sh +login ${SRCDS_LOGIN} ${SRCDS_LOGIN_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} validate +quit"
+                else
+                    STEAMCMD="./steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/container +app_update ${SRCDS_APPID} validate +quit"
+                fi
+            else
+                if [ ! -z ${SRCDS_LOGIN} ]; then
+                    STEAMCMD="./steamcmd/steamcmd.sh +login ${SRCDS_LOGIN} ${SRCDS_LOGIN_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} +quit"
+                else
+                    STEAMCMD="./steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/container +app_update ${SRCDS_APPID} +quit"
+                fi
+            fi
+        fi
+
+        eval ${STEAMCMD}
+        cp -f ./steamcmd/linux32/steamclient.so ./.steam/sdk32/steamclient.so
+        cp -f ./steamcmd/linux64/steamclient.so ./.steam/sdk64/steamclient.so
+    fi
+fi
+
+GAMEINFO_FILE="/home/container/game/csgo/gameinfo.gi"
+GAMEINFO_ENTRY="			Game	csgo/addons/metamod" 
+if [ -f "${GAMEINFO_FILE}" ]; then
+    if grep -q "Game[[:blank:]]*csgo\/addons\/metamod" "$GAMEINFO_FILE"; then
+        echo "File gameinfo.gi already configured. No changes were made."
+    else
+        awk -v new_entry="$GAMEINFO_ENTRY" '
+            BEGIN { found=0; }
+            // {
+                if (found) {
+                    print new_entry;
+                    found=0;
+                }
+                print;
+            }
+            /Game_LowViolence/ { found=1; }
+        ' "$GAMEINFO_FILE" > "$GAMEINFO_FILE.tmp" && mv "$GAMEINFO_FILE.tmp" "$GAMEINFO_FILE"
+
+        echo "The file ${GAMEINFO_FILE} has been configured for MetaMod successfully."
+    fi
+fi
+
+MODIFIED_STARTUP=`eval echo $(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')`
+echo ":/home/container$ ${MODIFIED_STARTUP}"
+
+eval ${MODIFIED_STARTUP}
