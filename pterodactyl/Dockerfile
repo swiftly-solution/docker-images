@@ -10,5 +10,5 @@ USER        container
 ENV         USER=container HOME=/home/container
 WORKDIR     /home/container
 
-COPY        ./docker/entrypoint.sh /entrypoint.sh
+COPY        ./pterodactyl/entrypoint.sh /entrypoint.sh
 CMD         [ "/bin/bash", "/entrypoint.sh" ]
