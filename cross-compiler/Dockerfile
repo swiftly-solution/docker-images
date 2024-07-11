@@ -8,7 +8,7 @@ WORKDIR /
 
 RUN git clone https://github.com/alliedmodders/ambuild.git
 RUN cd ambuild; python setup.py install; cd ..
-RUN sudo apt install -y libreadline-dev libboost-all-dev libmysqlclient-dev
+RUN sudo apt install -y libreadline-dev libboost-all-dev default-libmysqlclient-dev
 
 COPY ./setup.sh /setup.sh
 RUN chmod +x /setup.sh
