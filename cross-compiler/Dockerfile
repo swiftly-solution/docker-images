@@ -3,6 +3,7 @@ FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk
 LABEL MAINTAINER="SkuZZi <contact@skuzzi.ro / contact@swiftlycs2.net>"
 
 ENV FOLDER=swiftly
+ENV GAME=cs2
 
 WORKDIR /
 
@@ -13,4 +14,4 @@ RUN sudo apt install -y libreadline-dev libboost-all-dev default-libmysqlclient-
 COPY ./setup.sh /setup.sh
 RUN chmod +x /setup.sh
 
-CMD /setup.sh $FOLDER
+CMD /setup.sh $FOLDER $GAME
