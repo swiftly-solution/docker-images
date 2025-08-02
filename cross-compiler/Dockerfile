@@ -7,9 +7,8 @@ ENV GAME=cs2
 
 WORKDIR /
 
-RUN git clone https://github.com/alliedmodders/ambuild.git
-RUN cd ambuild; python setup.py install; cd ..
-RUN sudo apt install -y libreadline-dev libboost-all-dev default-libmysqlclient-dev libomp-dev
+RUN wget https://xmake.io/shget.text -O - | bash
+RUN sudo apt install -y libreadline-dev libboost-all-dev libomp-dev
 
 COPY ./setup.sh /setup.sh
 RUN chmod +x /setup.sh
