@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source ~/.xmake/profile
+
 cd /${1}
 
-xmake -j $(nproc)
+export XMAKE_ROOT=y
+xmake -j $(nproc) -y
