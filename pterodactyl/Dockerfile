@@ -15,6 +15,8 @@ RUN         curl -fsSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-insta
             /tmp/dotnet-install.sh --install-dir /usr/share/dotnet --channel 10.0 && \
             rm -f /tmp/dotnet-install.sh
 
+RUN         useradd -m -d /home/container -s /bin/bash container
+
 USER        container
 ENV         USER=container HOME=/home/container
 WORKDIR     /home/container
