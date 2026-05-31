@@ -23,6 +23,7 @@ WORKDIR     /home/container
 
 ENV         PATH=/home/container/.dotnet/tools:/usr/share/dotnet:$PATH
 RUN         dotnet tool install --global dotnet-sos
+RUN         dotnet tool install --global dotnet-trace
 RUN         dotnet-sos install
 
 COPY        ./entrypoint.sh /entrypoint.sh
